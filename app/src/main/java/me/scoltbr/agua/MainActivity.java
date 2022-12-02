@@ -62,16 +62,18 @@ public class MainActivity extends AppCompatActivity {
         bt_calcular.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (editpeso.getText().toString().isEmpty()){
+                if (editpeso.getText().toString().isEmpty()){ //Verificar se o valor do peso foi digitado
+                    //Notificação na parte inferior da tela informando que o peso não foi digitado
                     Toast.makeText(MainActivity.this,R.string.toast_informe_peso, Toast.LENGTH_SHORT).show();
-                }else if (editIdade.getText().toString().isEmpty()){
+                }else if (editIdade.getText().toString().isEmpty()){ //Verificar se a idade foi digitada
+                    //Notificação na parte inferior da tela informando que a idade não foi digitado
                     Toast.makeText(MainActivity.this, R.string.toas_infome_idade, Toast.LENGTH_SHORT).show();
                 }else{
-                    double peso = Double.parseDouble(editpeso.getText().toString());
-                    int idade = Integer.parseInt(editIdade.getText().toString());
-                    NumberFormat formatar = NumberFormat.getNumberInstance(new Locale("pt","BR"));
-                    formatar.setGroupingUsed(false);
-                    txt_resultado_ml.setText(formatar.format(calcular_total_ml(peso,idade)) + " ml");
+                    double peso = Double.parseDouble(editpeso.getText().toString()); //Receber e convertendo o Peso informado pelo usuario
+                    int idade = Integer.parseInt(editIdade.getText().toString()); //Recebendo e convertendo a Idade informada pelo usuario
+                    NumberFormat formatar = NumberFormat.getNumberInstance(new Locale("pt","BR")); //Formantando para o sistema numerico BR
+                    formatar.setGroupingUsed(true); //Definir o formato que vai ser usado
+                    txt_resultado_ml.setText(formatar.format(calcular_total_ml(peso,idade)) + " ml"); //Exibir na tela o valor de ML
                 }
             }
         });
@@ -79,17 +81,25 @@ public class MainActivity extends AppCompatActivity {
         ic_redefinir_dados.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Exibir na tela uma aba de dialogo para reiniciar
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                //Coloca um titulo para a tela com base nas Strings declaradas
                 alertDialog.setTitle(R.string.dialogo_titulo);
+                //Exibe a mensagem declarada nas Strings declaras
                 alertDialog.setMessage(R.string.dialogo_desc);
+                //Inicia um Button para reiniciar as informações
                 alertDialog.setPositiveButton("Ok",(dialogInterface, i) ->{
-                    editpeso.setText("");
-                    editIdade.setText("");
-                    txt_resultado_ml.setText("");
+                    editpeso.setText(""); //Zera as informações do peso da pessoa
+                    editIdade.setText(""); //Zera as informações da Idade da pessoa
+                    txt_resultado_ml.setText(""); //Zera os ML informados na tela
+                    txt_minuto.setText("00");
+                    txt_hora.setText("00");
                 });
+                //Cria um botão para cancelar
                 alertDialog.setNegativeButton("Cancelar", (dialogInterface, i) -> {
 
                 });
+                //Exibe na tela as informações
                 AlertDialog dialog = alertDialog.create();
                 dialog.show();
             }
@@ -98,12 +108,16 @@ public class MainActivity extends AppCompatActivity {
         bt_lembrete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Pela a instancia atual de Horario
                 calendar = Calendar.getInstance();
+                //Pega a hora atual do celular
                 horaAtual = calendar.get(Calendar.HOUR_OF_DAY);
+                //Pega os minutos atuais do celular
                 minutosAtuais = calendar.get(Calendar.MINUTE);
+                //Incia uma tela contendo os horarios
                 timePickerDialog = new TimePickerDialog(MainActivity.this, (timePicker,  hourOfDay, minutes) -> {
-                    txt_hora.setText(String.format("%02d",hourOfDay));
-                    txt_minuto.setText(String.format("%02d", minutes));
+                    txt_hora.setText(String.format("%02d",hourOfDay)); //Coloca na tela a hora para lembrar
+                    txt_minuto.setText(String.format("%02d", minutes)); //Coloca na tela os minutos
                 },horaAtual,minutosAtuais, true);
                 timePickerDialog.show();
             }
@@ -113,11 +127,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!txt_hora.getText().toString().isEmpty() && !txt_minuto.getText().toString().isEmpty()) {
-                    Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM);
-                    intent.putExtra(AlarmClock.EXTRA_HOUR, Integer.parseInt(txt_hora.getText().toString()));
-                    intent.putExtra(AlarmClock.EXTRA_MINUTES, Integer.parseInt(txt_minuto.getText().toString()));
-                    intent.putExtra(AlarmClock.EXTRA_MESSAGE, getString(R.string.alarme_mensagem));
-                    startActivity(intent);
+                    Intent intent = new Intent(AlarmClock.ACTION_SET_ALARM); //Ação de usar Componente internos do Celular (Alarme)
+                    intent.putExtra(AlarmClock.EXTRA_HOUR, Integer.parseInt(txt_hora.getText().toString())); //Inserir a hora direto no alarme
+                    intent.putExtra(AlarmClock.EXTRA_MINUTES, Integer.parseInt(txt_minuto.getText().toString())); //Inserir o minuto direto no alarme
+                    intent.putExtra(AlarmClock.EXTRA_MESSAGE, getString(R.string.alarme_mensagem)); //Mensagem definida do Alarme
+                    startActivity(intent); //Abre a tela do Alarme do Celular
                     if (intent.resolveActivity(getPackageManager()) != null){
                         startActivity(intent);
                     }else {
